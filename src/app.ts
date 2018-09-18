@@ -6,7 +6,6 @@ import * as helmet from "helmet";
 import * as morgan from "morgan";
 import dialogflowRouter from "./dialogflow-handler/dialogflowController";
 import ErrorResponse from "./errors/ErrorResponse";
-import StatusError from "./errors/StatusError";
 import logger from "./utils/logger";
 
 const app = express();
@@ -27,8 +26,10 @@ app.use(
 app.use("/dialogflow", dialogflowRouter);
 
 // tslint:disable:variable-name
-app.use((_req: Request, _res: Response, next: NextFunction) => {
-  next(new StatusError("Not Found", 404));
+app.use((_req: Request, res: Response) => {
+  const status = 404;
+  res.status(status);
+  res.send(new ErrorResponse("Not Found", status));
 });
 
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
